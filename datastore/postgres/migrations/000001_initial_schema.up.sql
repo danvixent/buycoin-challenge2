@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS users(
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR (100) NOT NULL,
+    email VARCHAR (300) UNIQUE NOT NULL,
+    password jsonb NOT NULL ,
+    verified bool,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS user_bank_accounts (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid REFERENCES users(id) NOT NULL ,
+    bank_account jsonb NOT NULL ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
+);

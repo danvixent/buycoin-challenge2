@@ -1,0 +1,21 @@
+type Mutation {
+    registerUser(userDetails: UserRegistrationInput!): User
+    addBankAccount(user_id: ID!, input: BankAccount!): Boolean!
+}
+
+type Query {
+    resolveAccount(bank_code: String! account_number:String!): String!
+}
+
+
+input UserRegistrationInput {
+    name: String!
+    email: String!
+    password: String!
+}
+
+input BankAccount {
+    user_account_number:String!
+    user_bank_code: String!
+    user_account_name: String!
+}

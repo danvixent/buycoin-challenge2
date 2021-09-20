@@ -1,0 +1,18 @@
+schema:
+  - ./*.graphql
+exec:
+  filename: generated.go
+model:
+  filename: models_gen.go
+resolver:
+  filename: resolver.go
+  type: Resolver
+models:
+  UserRegistrationInput:
+    model: github.com/danvixent/buycoin-challenge2/handlers/account.UserRegistrationVM
+  BankAccount:
+    model: github.com/danvixent/buycoin-challenge2.BankAccount
+  EmailAddress:
+    model: github.com/danvixent/buycoin-challenge2.EmailAddress
+  User:
+    model: github.com/danvixent/buycoin-challenge2.User

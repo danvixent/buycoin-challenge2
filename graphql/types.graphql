@@ -1,0 +1,10 @@
+scalar EmailAddress
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    verified: Boolean!
+    created_at: String!
+    updated_at: String!
+}
