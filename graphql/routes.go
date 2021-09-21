@@ -1,12 +1,8 @@
 package graphql
 
 import (
-	"context"
-	"github.com/99designs/gqlgen/graphql"
-	"github.com/99designs/gqlgen/handler"
+	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/danvixent/buycoin-challenge2/handlers/account"
-	log "github.com/sirupsen/logrus"
-	"github.com/vektah/gqlparser/gqlerror"
 	"net/http"
 )
 
@@ -25,16 +21,9 @@ func (h *Handler) graphqlHandler() http.HandlerFunc {
 		Resolvers: &Resolver{accountHandler: h.accountHandler},
 	}
 
-	g := handler.GraphQL(NewExecutableSchema(c),
-		handler.ErrorPresenter(
-			func(ctx context.Context, err error) *gqlerror.Error {
-				log.Errorf("issue carrying out graphql operation: %v", err)
-				return graphql.DefaultErrorPresenter(ctx, err)
-			},
-		),
-	)
+	s := handler.NewDefaultServer(NewExecutableSchema(c))
 
-	return g.ServeHTTP
+	return s.ServeHTTP
 }
 
 func (h *Handler) SetupRoutes(mux *http.ServeMux) {
