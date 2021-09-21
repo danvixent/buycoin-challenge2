@@ -27,7 +27,7 @@ func New(
 
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
-		log.Panic("Creating postgres connection, err=%v", err)
+		log.Panicf("Creating postgres connection, err=%v", err)
 	}
 
 	log.Println("Connected to postgres")

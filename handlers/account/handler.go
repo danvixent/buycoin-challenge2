@@ -53,7 +53,8 @@ func (h *Handler) AddBankAccount(ctx context.Context, userID string, account app
 
 	data, err := h.paystackAPIClient.ResolveBankAccount(ctx, r)
 	if err != nil {
-		return false, errors.Wrap(err, "failed to resolve user bank account")
+		logger.WithError(err).Errorf("failed to resolve bank account")
+		return false, errors.New("failed to resolve user bank account")
 	}
 
 	userBankAccount := &app.UserBankAccount{
@@ -86,7 +87,8 @@ func (h *Handler) verifyUser(ctx context.Context, userBankAccount *app.UserBankA
 func (h *Handler) ResolveAccount(ctx context.Context, bankCode string, accountNumber string, logger *log.Entry) (string, error) {
 	account, err := h.userRepo.FindUserBankAccount(ctx, bankCode, accountNumber)
 	if err != nil {
-		return "", errors.Wrap(err, "find user bank account failed")
+		logger.WithError(err).Error("failed to find user bank account")
+		return "", errors.New("find user bank account failed")
 	}
 
 	return account.BankAccount.UserAccountName, nil

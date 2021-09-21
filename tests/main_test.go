@@ -3,6 +3,7 @@ package tests
 import (
 	"context"
 	"fmt"
+	app "github.com/danvixent/buycoin-challenge2"
 	"github.com/danvixent/buycoin-challenge2/config"
 	"github.com/danvixent/buycoin-challenge2/datastore/postgres"
 	"github.com/danvixent/buycoin-challenge2/graphql"
@@ -12,13 +13,14 @@ import (
 	"gopkg.in/yaml.v2"
 	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
 	"testing"
 	"time"
 )
 
-var baseURL = "http://localhost:%s/graphql"
+var (
+	baseURL  = "http://localhost:%s/graphql"
+	userRepo app.UserRepository
+)
 
 func TestMain(m *testing.M) {
 	file, err := os.Open("../config/config.yml")
@@ -33,7 +35,7 @@ func TestMain(m *testing.M) {
 	}
 
 	postgresClient := postgres.New(context.Background(), cfg.Postgres)
-	userRepo := postgres.NewUserRepository(postgresClient)
+	userRepo = postgres.NewUserRepository(postgresClient)
 	paystackClient := paystack.NewAPIClient(cfg.PaystackAPIKey)
 
 	accountHandler := account.NewHandler(userRepo, paystackClient)
@@ -61,30 +63,24 @@ func TestMain(m *testing.M) {
 		}
 	}()
 
-	time.Sleep(2 * time.Second)
+	// allow the goroutine above start the server
+	time.Sleep(time.Second)
+
 	// run the tests
 	code := m.Run()
 
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
-	quit := make(chan os.Signal)
-	// kill (no param) default send syscanll.SIGTERM
-	// kill -2 is syscall.SIGINT
-	// kill -9 is syscall. SIGKILL but can"t be catch, so no need to add it
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Print("shutdown server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
+	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("server shutdown failed: %v", err)
+		log.Fatalf("unable to shutdown server gracefully: %v", err)
 	}
-	select {
-	case <-ctx.Done():
-		log.Print("timeout of 1 seconds.")
-	}
-	log.Print("server exiting")
 
 	os.Exit(code)
+}
+
+func deleteAllUsers() error {
+	return userRepo.DeleteAllUsers()
+}
+
+func deleteAllUserBankAccounts() error {
+	return userRepo.DeleteAllUserBankAccounts()
 }

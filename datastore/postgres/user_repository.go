@@ -70,3 +70,11 @@ func (u *UserRepository) FindUserBankAccount(ctx context.Context, bankCode strin
 
 	return account, nil
 }
+
+func (u *UserRepository) DeleteAllUsers() error {
+	return u.client.db.Model(&app.User{}).Where("id IS NOT NULL").Delete("").Error
+}
+
+func (u *UserRepository) DeleteAllUserBankAccounts() error {
+	return u.client.db.Model(&app.UserBankAccount{}).Where("id IS NOT NULL").Delete("").Error
+}

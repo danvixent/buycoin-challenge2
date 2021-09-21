@@ -80,4 +80,6 @@ type UserRepository interface {
 
 	SaveUserBankAccount(ctx context.Context, account *UserBankAccount) error
 	FindUserBankAccount(ctx context.Context, bankCode string, accountNumber string) (*UserBankAccount, error)
+	DeleteAllUserBankAccounts() error
+	DeleteAllUsers() error
 }
